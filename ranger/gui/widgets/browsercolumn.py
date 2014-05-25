@@ -271,11 +271,19 @@ class BrowserColumn(Pager):
             space = self.wid
 
             # selection mark
-            tagmark = self._draw_tagged_display(tagged, tagged_marker)
-            tagmarklen = self._total_len(tagmark)
-            if space - tagmarklen > 2:
-                predisplay_left += tagmark
-                space -= tagmarklen
+            if self.settings.enable_icons and\
+                    hasattr(self.settings.colorscheme,'icon'):
+                icon = self._draw_icon_display(drawn, tagged, tagged_marker)
+                iconlen = self._total_len(icon)
+                if space - iconlen > 2:
+                    predisplay_left += icon
+                    space -= iconlen
+            else:
+                tagmark = self._draw_tagged_display(tagged, tagged_marker)
+                tagmarklen = self._total_len(tagmark)
+                if space - tagmarklen > 2:
+                    predisplay_left += tagmark
+                    space -= tagmarklen
 
             # vcs data
             vcsstring = self._draw_vcsstring_display(drawn)
@@ -320,6 +328,10 @@ class BrowserColumn(Pager):
 
     def _total_len(self, predisplay):
         return sum([len(WideString(s)) for s, L in predisplay])
+
+    def _draw_icon_display(self, drawn, tagged, tag_marker):
+        icon = self.settings.colorscheme.icon(drawn, tagged, tag_marker)
+        return [[str(icon), ['icon']]]
 
     def _draw_text_display(self, text, space):
         wtext = WideString(text)

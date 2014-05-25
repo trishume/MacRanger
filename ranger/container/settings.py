@@ -56,6 +56,8 @@ ALLOWED_SETTINGS = {
     'vcs_backend_git': str,
     'vcs_backend_hg': str,
     'xterm_alt_key': bool,
+    # macranger
+    'enable_icons': bool,
 }
 
 DEFAULT_VALUES = {

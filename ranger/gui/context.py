@@ -19,7 +19,10 @@ CONTEXT_KEYS = ['reset', 'error', 'badinfo',
         'infostring',
         'vcsfile', 'vcsremote', 'vcsinfo', 'vcscommit',
         'vcsconflict', 'vcschanged', 'vcsunknown', 'vcsignored',
-        'vcsstaged', 'vcssync', 'vcsbehind', 'vcsahead', 'vcsdiverged']
+        'vcsstaged', 'vcssync', 'vcsbehind', 'vcsahead', 'vcsdiverged',
+        # MacRanger
+        'icon'
+        ]
 
 class Context(object):
     def __init__(self, keys):
