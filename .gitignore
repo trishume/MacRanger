@@ -3,3 +3,4 @@
 *.pyo
 stuff/*
 build
+install_log.txt
