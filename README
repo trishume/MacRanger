@@ -1,3 +1,12 @@
+MacRanger
+========
+
+MacRanger is a fork of ranger that adds in OSX and iTerm2 specific
+features like inline image display and quicklook previews.
+
+For an optimal experience it should be used with the
+[MacRanger-App](//github.com/trishume/MacRanger-App) wrapper.
+
 ranger v.1.6.1
 ==============
 ranger is a console file manager with VI key bindings.  It provides a
