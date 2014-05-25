@@ -1,132 +1,67 @@
 # This software is distributed under the terms of the GNU GPL version 3.
 
-"""Interface for w3mimgdisplay to draw images into the console
-
-This module provides functions to draw images in the terminal using
-w3mimgdisplay, an utilitary program from w3m (a text-based web browser).
-w3mimgdisplay can display images either in virtual tty (using linux
-framebuffer) or in a Xorg session.
-
-w3m need to be installed for this to work.
+"""Interface for iterm2 inline image drawing
 """
 
-import fcntl
-import os
-import select
-import struct
 import sys
-import termios
-from subprocess import Popen, PIPE
-
-W3MIMGDISPLAY_PATH = '/usr/lib/w3m/w3mimgdisplay'
-W3MIMGDISPLAY_OPTIONS = []
+import ranger.api
+import curses
+import base64
 
 class ImgDisplayUnsupportedException(Exception):
     pass
 
-
 class ImageDisplayer(object):
-    is_initialized = False
+    def __init__(self, fm):
+        self.fm = fm
 
     def initialize(self):
-        """start w3mimgdisplay"""
-        self.binary_path = os.environ.get("W3MIMGDISPLAY_PATH", None)
-        if not self.binary_path:
-            self.binary_path = W3MIMGDISPLAY_PATH
-        self.process = Popen([self.binary_path] + W3MIMGDISPLAY_OPTIONS,
-                stdin=PIPE, stdout=PIPE, universal_newlines=True)
-        self.is_initialized = True
+        pass
 
-    def draw(self, path, start_x, start_y, width, height):
-        """Draw an image at the given coordinates."""
-        if not self.is_initialized or self.process.poll() is not None:
-            self.initialize()
-        self.process.stdin.write(self._generate_w3m_input(path, start_x,
-            start_y, width, height))
-        self.process.stdin.flush()
-        self.process.stdout.readline()
+    def draw(self,path, start_x, start_y, width, height):
+        # self.fm.notify("drawing " + str(start_x) + " " + str(start_y) + " " + path)
+        # self.fm.open_console("wut")
+        self._placeImage(path, start_x, start_y, width, height)
 
     def clear(self, start_x, start_y, width, height):
         """Clear a part of terminal display."""
-        if not self.is_initialized or self.process.poll() is not None:
-            self.initialize()
-
-        fontw, fonth = _get_font_dimensions()
-
-        cmd = "6;{x};{y};{w};{h}\n4;\n3;\n".format(
-                x = start_x * fontw,
-                y = start_y * fonth,
-                w = (width + 1) * fontw,
-                h = height * fonth)
-
-        self.process.stdin.write(cmd)
-        self.process.stdin.flush()
-        self.process.stdout.readline()
-
-    def _generate_w3m_input(self, path, start_x, start_y, max_width, max_height):
-        """Prepare the input string for w3mimgpreview
-
-        start_x, start_y, max_height and max_width specify the drawing area.
-        They are expressed in number of characters.
-        """
-        fontw, fonth = _get_font_dimensions()
-        if fontw == 0 or fonth == 0:
-            raise ImgDisplayUnsupportedException()
-
-        max_width_pixels = max_width * fontw
-        max_height_pixels = max_height * fonth
-
-        # get image size
-        cmd = "5;{}\n".format(path)
-
-        self.process.stdin.write(cmd)
-        self.process.stdin.flush()
-        output = self.process.stdout.readline().split()
-
-        if len(output) != 2:
-            raise Exception('Failed to execute w3mimgdisplay', output)
-
-        width = int(output[0])
-        height = int(output[1])
-
-        # get the maximum image size preserving ratio
-        if width > max_width_pixels:
-            height = (height * max_width_pixels) // width
-            width = max_width_pixels
-        if height > max_height_pixels:
-            width = (width * max_height_pixels) // height
-            height = max_height_pixels
-
-        return "0;1;{x};{y};{w};{h};;;;;{filename}\n4;\n3;\n".format(
-                x = start_x * fontw,
-                y = start_y * fonth,
-                w = width,
-                h = height,
-                filename = path)
+        # self.fm.notify("clearing")
+        # self.fm.redraw_window()
+        self.fm.ui.win.redrawwin()
+        self.fm.ui.win.refresh()
 
     def quit(self):
-        if self.is_initialized:
-            self.process.kill()
+        pass
 
+    def _placeImage(self,path,x,y,width,height):
+        text = self._imageEscape(path,width,height)
+        # text = "holy moly"
+        curses.putp(curses.tigetstr("sc"))
+        move = curses.tparm(curses.tigetstr("cup"), y, x)
+        sys.stdout.write(move)
+        sys.stdout.write(text)
+        curses.putp(curses.tigetstr("rc"))
+        sys.stdout.flush()
 
-def _get_font_dimensions():
-    # Get the height and width of a character displayed in the terminal in
-    # pixels.
-    s = struct.pack("HHHH", 0, 0, 0, 0)
-    fd_stdout = sys.stdout.fileno()
-    x = fcntl.ioctl(fd_stdout, termios.TIOCGWINSZ, s)
-    rows, cols, xpixels, ypixels = struct.unpack("HHHH", x)
-    if xpixels == 0 and ypixels == 0:
-        binary_path = os.environ.get("W3MIMGDISPLAY_PATH", None)
-        if not binary_path:
-            binary_path = W3MIMGDISPLAY_PATH
-        process = Popen([binary_path, "-test"],
-            stdout=PIPE, universal_newlines=True)
-        output, _ = process.communicate()
-        output = output.split()
-        xpixels, ypixels = int(output[0]), int(output[1])
-        # adjust for misplacement
-        xpixels += 2
-        ypixels += 2
+    def _imageEscape(self, fileName, width, height):
+        content = self._readImage(fileName)
 
-    return (xpixels // cols), (ypixels // rows)
+        text = "\033]1337;File=name="
+        text += base64.b64encode(fileName)
+        text += ";size="
+        text += str(len(content))
+        text += ";inline=1;width="
+        text += str(width)
+        text += ";height="
+        text += str(height)
+        text += ":"
+        text += base64.b64encode(content)
+        text += "\a\n"
+        return text
+
+    def _readImage(self, fileName):
+        f = open(fileName, "rb")
+        try:
+            return f.read()
+        finally:
+            f.close()

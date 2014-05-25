@@ -48,7 +48,7 @@ class FM(Actions, SignalDispatcher):
         self.start_paths = paths
         self.directories = dict()
         self.log = deque(maxlen=20)
-        self.image_displayer = ImageDisplayer()
+        self.image_displayer = ImageDisplayer(self)
         self.bookmarks = bookmarks
         self.current_tab = 1
         self.tabs = {}

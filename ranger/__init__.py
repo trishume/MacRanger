@@ -13,9 +13,10 @@ import os
 
 # Information
 __license__ = 'GPL3'
-__version__ = '1.6.1'
-__author__ = __maintainer__ = 'Roman Zimbelmann'
-__email__ = 'hut@lepus.uberspace.de'
+__version__ = '1.7.0'
+__author__ = 'Roman Zimbelmann'
+__maintainer__ = 'Tristan Hume'
+__email__ = 'tristan@thume.ca'
 
 # Constants
 RANGERDIR = os.path.dirname(__file__)
