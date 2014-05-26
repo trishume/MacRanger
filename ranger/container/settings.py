@@ -59,6 +59,7 @@ ALLOWED_SETTINGS = {
     # macranger
     'enable_icons': bool,
     'using_macranger_app': bool,
+    'display_unix_cruft': bool,
 }
 
 DEFAULT_VALUES = {

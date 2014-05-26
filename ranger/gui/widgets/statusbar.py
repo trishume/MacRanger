@@ -153,16 +153,20 @@ class StatusBar(Widget):
 
         if self.fm.mode != 'normal':
             perms = '--%s--' % self.fm.mode.upper()
-        else:
+        elif self.settings.display_unix_cruft:
             perms = target.get_permission_string()
+        else:
+            perms = ""
         how = getuid() == stat.st_uid and 'good' or 'bad'
         left.add(perms, 'permissions', how)
-        left.add_space()
-        left.add(str(stat.st_nlink), 'nlink')
-        left.add_space()
-        left.add(self._get_owner(target), 'owner')
-        left.add_space()
-        left.add(self._get_group(target), 'group')
+        if self.settings.display_unix_cruft:
+            left.add_space()
+            left.add(str(stat.st_nlink), 'nlink')
+            left.add_space()
+            left.add(self._get_owner(target), 'owner')
+            left.add_space()
+            left.add(self._get_group(target), 'group')
+            left.add_space()
 
         if target.is_link:
             how = target.exists and 'good' or 'bad'
@@ -172,14 +176,14 @@ class StatusBar(Widget):
                 dest = '?'
             left.add(' -> ' + dest, 'link', how)
         else:
+            left.add(strftime(self.timeformat,
+                    localtime(stat.st_mtime)), 'mtime')
+
             left.add_space()
 
             if self.settings.display_size_in_status_bar and target.infostring:
                 left.add(target.infostring.replace(" ", ""))
                 left.add_space()
-
-            left.add(strftime(self.timeformat,
-                    localtime(stat.st_mtime)), 'mtime')
 
         if target.vcs:
             if target.vcsbranch:
