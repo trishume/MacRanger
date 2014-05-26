@@ -47,6 +47,8 @@ class ImageDisplayer(object):
     def _escapeSequence(self, fileName, width, height):
         if self._is_image_file(fileName):
             return self._imageEscape(fileName, width, height)
+        if self.fm.settings.using_macranger_app:
+            return self._qlMacRangerEscape(fileName, width, height)
         return self._qlEscape(fileName, width, height)
 
     def _imageEscape(self, fileName, width, height):
@@ -71,6 +73,16 @@ class ImageDisplayer(object):
         text += ":"
         text += content
         text += "\a\n"
+        return text
+
+    def _qlMacRangerEscape(self, fileName, width, height):
+        text = "\033]1337;File=name="
+        text += base64.b64encode(fileName)
+        text += ";size=1;inline=1;width="
+        text += str(width)
+        text += ";height="
+        text += str(height)
+        text += ":q\a\n"
         return text
 
     def _readImage(self, fileName):

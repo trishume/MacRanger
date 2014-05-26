@@ -58,6 +58,7 @@ ALLOWED_SETTINGS = {
     'xterm_alt_key': bool,
     # macranger
     'enable_icons': bool,
+    'using_macranger_app': bool,
 }
 
 DEFAULT_VALUES = {
