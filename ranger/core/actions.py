@@ -853,6 +853,12 @@ class Actions(FileManagerAware, EnvironmentAware, SettingsAware):
             found = data.get((-1, -1), data.get((width, -1),
                 data.get((-1, height), data.get((width, height), False))))
             if found == False:
+                if data.get('previewfile',False):
+                    data['foundpreview'] = True
+                    pager.set_image(path)
+                    data['loading'] = False
+                    return path
+
                 try:
                     stat_ = os.stat(self.settings.preview_script)
                 except:
@@ -892,6 +898,9 @@ class Actions(FileManagerAware, EnvironmentAware, SettingsAware):
                         data[(-1, -1)] = content
                     elif exit == 6:
                         data['imagepreview'] = True
+                    elif exit == 7:
+                        data['imagepreview'] = True
+                        data['previewfile'] = path
                     elif exit == 1:
                         data[(-1, -1)] = None
                         data['foundpreview'] = False
