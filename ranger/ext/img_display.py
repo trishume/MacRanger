@@ -49,17 +49,12 @@ class ImageDisplayer(object):
             return self._imageEscape(fileName, width, height)
         if self.fm.settings.using_macranger_app:
             return self._qlMacRangerEscape(fileName, width, height)
-        return self._qlEscape(fileName, width, height)
+        return "Quicklook Previews Require App"
 
     def _imageEscape(self, fileName, width, height):
         content = self._readImage(fileName)
         b64 = base64.b64encode(content)
         return self._iTermEscape(fileName, b64, len(content), width, height)
-
-    def _qlEscape(self, fileName, width, height):
-        content = self._quicklook_data(fileName, width, height)
-        size = len(base64.b64decode(content))
-        return self._iTermEscape(fileName, content, size, width, height)
 
     def _iTermEscape(self, fileName, content, length, width, height):
         text = "\033]1337;File=name="
@@ -98,12 +93,3 @@ class ImageDisplayer(object):
             if p.endswith(ext):
                 return True
         return False
-
-    def _quicklook_data(self, fileName, width, height):
-        qltool = self.fm.relpath('data/QLTool.app/Contents/MacOS/QLTool')
-        command = [qltool, 'di', fileName, str(width*10), str(height*10)]
-        # self.fm.ui.destroy()
-        # sys.stderr.write(str(command) + "\n")
-        # sys.exit(1)
-        data = subprocess.check_output(command)
-        return data
