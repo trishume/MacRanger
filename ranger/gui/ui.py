@@ -321,6 +321,7 @@ class UI(DisplayableContainer):
             self.browser.pager.draw_image()
         else:
             self.browser.columns[-1].draw_image()
+            self.browser.draw_images()
 
     def close_pager(self):
         if self.console.visible:
