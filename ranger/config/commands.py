@@ -77,6 +77,26 @@
 # ===================================================================
 
 from ranger.api.commands import *
+import subprocess
+
+# MacRanger
+
+class copy(Command):
+    """:copy <macro>
+    Uses the OSX pbcopy program to copy to the clipboard.
+    Macros are expanded.
+    """
+
+    context = 'browser'
+
+    def execute(self):
+        board = self.fm.substitute_macros(self.rest(1), escape=True)
+        p = subprocess.Popen(['pbcopy'], stdout=subprocess.PIPE,
+            stdin=subprocess.PIPE, stderr=None)
+        p.communicate(input=board)
+
+
+# ranger
 
 class alias(Command):
     """:alias <newcommand> <oldcommand>
@@ -510,7 +530,7 @@ class console(Command):
                 self.shift()
             except:
                 pass
-        self.fm.open_console(self.rest(1), position=position)
+        self.fm.open_console(self.rest(1) + " ", position=position)
 
 
 class load_copy_buffer(Command):
