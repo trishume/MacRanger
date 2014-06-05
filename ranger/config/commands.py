@@ -530,7 +530,11 @@ class console(Command):
                 self.shift()
             except:
                 pass
-        self.fm.open_console(self.rest(1) + " ", position=position)
+        rest = self.rest(1)
+        extra = " "
+        if not rest:
+            extra = ""
+        self.fm.open_console(rest + extra, position=position)
 
 
 class load_copy_buffer(Command):
