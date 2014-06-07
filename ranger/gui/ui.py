@@ -303,7 +303,8 @@ class UI(DisplayableContainer):
 
             fixed_cwd = cwd.encode('utf-8', 'surrogateescape'). \
                     decode('utf-8', 'replace')
-            sys.stdout.write("\033]0;%s%s\007" % (fixed_cwd,extra))
+            sys.stdout.write("\033]2;%s%s\007" % (fixed_cwd,extra))
+            sys.stdout.write("\033]1;%s\007" % (fixed_cwd))
             sys.stdout.flush()
 
         self.win.refresh()
