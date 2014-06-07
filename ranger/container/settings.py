@@ -60,7 +60,6 @@ ALLOWED_SETTINGS = {
     'enable_icons': bool,
     'using_macranger_app': bool,
     'display_unix_cruft': bool,
-    'display_drag_icons': bool,
 }
 
 DEFAULT_VALUES = {

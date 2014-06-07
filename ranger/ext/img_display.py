@@ -20,10 +20,14 @@ class ImageDisplayer(object):
         pass
 
     def draw(self,path, start_x, start_y, width, height):
+        # self.fm.notify("drawing " + str(start_x) + " " + str(start_y) + " " + path)
+        # self.fm.open_console("wut")
         self._placeImage(path, start_x, start_y, width, height)
 
     def clear(self, start_x, start_y, width, height):
         """Clear a part of terminal display."""
+        # self.fm.notify("clearing")
+        # self.fm.redraw_window()
         self.fm.ui.win.redrawwin()
         self.fm.ui.win.refresh()
 
@@ -32,6 +36,7 @@ class ImageDisplayer(object):
 
     def _placeImage(self,path,x,y,width,height):
         text = self._escapeSequence(path,width,height)
+        # text = "holy moly"
         curses.putp(curses.tigetstr("sc"))
         move = curses.tparm(curses.tigetstr("cup"), y, x)
         sys.stdout.write(move)

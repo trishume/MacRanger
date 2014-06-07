@@ -39,8 +39,7 @@ class TitleBar(Widget):
         self._print_result(self.result)
         if self.wid > 2:
             self.color('in_titlebar', 'throbber')
-            extraw = self.settings.display_drag_icons and 5 or 0
-            self.addnstr(self.y, self.wid - 2 - self.tab_width - extraw,
+            self.addnstr(self.y, self.wid - 2 - self.tab_width,
                     self.throbber, 1)
 
     def click(self, event):
@@ -133,8 +132,6 @@ class TitleBar(Widget):
                 self.tab_width += len(tabtext)
                 clr = 'good' if tabname == self.fm.current_tab else 'bad'
                 bar.addright(tabtext, 'tab', clr, fixed=True)
-        if self.settings.display_drag_icons:
-            bar.addright('    ', 'space',fixed=True)
 
     def _get_tab_text(self, tabname):
         result = ' ' + str(tabname)

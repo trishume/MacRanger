@@ -105,12 +105,6 @@ class BrowserView(Widget, DisplayableContainer):
         elif self.draw_info:
             self._draw_info(self.draw_info)
 
-    def draw_images(self):
-        if self.settings.display_drag_icons:
-            path = self.main_column.target.path
-            y, x = self.fm.ui.termsize
-            self.fm.image_displayer.draw(path, x-3,0, 3,1)
-
     def finalize(self):
         if self.pager.visible:
             try:
