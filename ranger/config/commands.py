@@ -81,8 +81,8 @@ import subprocess
 
 # MacRanger
 
-class copy(Command):
-    """:copy <macro>
+class pbcopy(Command):
+    """:pbcopy <macro>
     Uses the OSX pbcopy program to copy to the clipboard.
     Macros are expanded.
     """
