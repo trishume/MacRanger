@@ -312,6 +312,8 @@ class FM(Actions, SignalDispatcher):
 
                 if not sleeping:
                     ui.redraw()
+                else:
+                    ui.sleep_update()
 
                 ui.set_load_mode(not loader.paused and loader.has_work())
 

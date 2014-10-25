@@ -78,3 +78,6 @@ class CursesShortcuts(SettingsAware):
     def color_reset(self):
         """Change the colors to the default colors"""
         CursesShortcuts.color(self, 'reset')
+
+    def sleep_update(self):
+        curses.doupdate()
