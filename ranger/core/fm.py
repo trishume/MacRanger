@@ -23,6 +23,7 @@ from ranger.ext.img_display import ImageDisplayer
 from ranger.ext.rifle import Rifle
 from ranger.container.directory import Directory
 from ranger.ext.signals import SignalDispatcher
+from ranger.ext.server import RangerControlServer
 from ranger import __version__
 from ranger.core.loader import Loader
 
@@ -59,6 +60,7 @@ class FM(Actions, SignalDispatcher):
         self.loader = Loader()
         self.copy_buffer = set()
         self.do_cut = False
+        self.control_server = RangerControlServer(self)
 
         try:
             self.username = pwd.getpwuid(os.geteuid()).pw_name
@@ -300,6 +302,7 @@ class FM(Actions, SignalDispatcher):
         sleeping = False
 
         ranger.api.hook_ready(self)
+        self.control_server.start()
 
         try:
             while True:
@@ -320,8 +323,9 @@ class FM(Actions, SignalDispatcher):
                 ui.draw_images()
 
                 had_input = ui.handle_input()
+                had_command = self.control_server.act_on_messages()
 
-                sleeping = not (had_input or loader.has_work())
+                sleeping = not (had_input or loader.has_work() or had_command)
 
                 if zombies:
                     for zombie in tuple(zombies):
@@ -340,6 +344,7 @@ class FM(Actions, SignalDispatcher):
 
         finally:
             self.image_displayer.quit()
+            self.control_server.stop()
             if ranger.arg.choosedir and self.thisdir and self.thisdir.path:
                 # XXX: UnicodeEncodeError: 'utf-8' codec can't encode character
                 # '\udcf6' in position 42: surrogates not allowed
