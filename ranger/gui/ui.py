@@ -285,10 +285,12 @@ class UI(DisplayableContainer):
         if x < 60:
             self.browser.preview = False
             self.browser.change_ratios([1])
+            self.browser.need_clear = True
             self.is_collapsed = True
         elif self.is_collapsed:
             self.browser.preview = True
             self.browser.change_ratios(self.settings.column_ratios)
+            self.is_collapsed = False
 
         self.browser.resize(self.settings.status_bar_on_top and 2 or 1, 0, y - 2, x)
         self.taskview.resize(1, 0, y - 2, x)
