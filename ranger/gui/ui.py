@@ -174,7 +174,9 @@ class UI(DisplayableContainer):
 
     def handle_input(self):
         key = self.win.getch()
-        if key is 27 or key >= 128 and key < 256:
+        if key < 0:
+            return False
+        elif key is 27 or key >= 128 and key < 256:
             # Handle special keys like ALT+X or unicode here:
             keys = [key]
             previous_load_mode = self.load_mode
@@ -199,16 +201,16 @@ class UI(DisplayableContainer):
                 curses.flushinp()
         else:
             # Handle simple key presses, CTRL+X, etc here:
-            if key > 0:
-                if self.settings.flushinput and not self.console.visible:
-                    curses.flushinp()
-                if key == curses.KEY_MOUSE:
-                    self.handle_mouse()
-                elif key == curses.KEY_RESIZE:
-                    self.update_size()
-                else:
-                    if not self.fm.input_is_blocked():
-                        self.handle_key(key)
+            if self.settings.flushinput and not self.console.visible:
+                curses.flushinp()
+            if key == curses.KEY_MOUSE:
+                self.handle_mouse()
+            elif key == curses.KEY_RESIZE:
+                self.update_size()
+            else:
+                if not self.fm.input_is_blocked():
+                    self.handle_key(key)
+        return True
 
     def setup(self):
         """Build up the UI by initializing widgets."""

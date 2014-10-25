@@ -297,6 +297,7 @@ class FM(Actions, SignalDispatcher):
         loader = self.loader
         has_throbber = hasattr(ui, 'throbber')
         zombies = self.run.zombies
+        sleeping = False
 
         ranger.api.hook_ready(self)
 
@@ -309,13 +310,16 @@ class FM(Actions, SignalDispatcher):
                     else:
                         throbber(remove=True)
 
-                ui.redraw()
+                if not sleeping:
+                    ui.redraw()
 
                 ui.set_load_mode(not loader.paused and loader.has_work())
 
                 ui.draw_images()
 
-                ui.handle_input()
+                had_input = ui.handle_input()
+
+                sleeping = not (had_input or loader.has_work())
 
                 if zombies:
                     for zombie in tuple(zombies):
