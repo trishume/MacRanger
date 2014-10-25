@@ -38,6 +38,7 @@ class UI(DisplayableContainer):
     load_mode = False
     is_on = False
     termsize = None
+    is_collapsed = False
 
     def __init__(self, env=None, fm=None):
         self.keybuffer = KeyBuffer()
@@ -277,6 +278,15 @@ class UI(DisplayableContainer):
         """resize all widgets"""
         self.termsize = self.win.getmaxyx()
         y, x = self.termsize
+
+        # macranger responsive columns
+        if x < 60:
+            self.browser.preview = False
+            self.browser.change_ratios([1])
+            self.is_collapsed = True
+        elif self.is_collapsed:
+            self.browser.preview = True
+            self.browser.change_ratios(self.settings.column_ratios)
 
         self.browser.resize(self.settings.status_bar_on_top and 2 or 1, 0, y - 2, x)
         self.taskview.resize(1, 0, y - 2, x)
